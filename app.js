@@ -30,8 +30,8 @@ initializeDBAndServer();
 const dbUserChecking = (dbUser) => {
   return dbUser;
 };
-const passwordChecking = (password) => {
-  const isPasswordMatched = bcrypt.compare(password, dbUser.password);
+const passwordChecking = async (password,password1) => {
+  const isPasswordMatched = await bcrypt.compare(password, password1);
   return isPasswordMatched;
 };
 //login user API
@@ -47,7 +47,7 @@ app.post("/login/", async (request, response) => {
         response.send("Invalid User");
       }
       break;
-    case passwordChecking(password):
+    case passwordChecking(password,dbUser.password):
       if (isPasswordMatched === false) {
         response.status(400);
         response.send("Invalid Password");
