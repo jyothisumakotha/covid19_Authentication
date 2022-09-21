@@ -27,6 +27,7 @@ const initializeDBAndServer = async () => {
 };
 
 initializeDBAndServer();
+
 //login user API
 app.post("/login/", async (request, response) => {
   const { username, password } = request.body;
@@ -47,3 +48,4 @@ app.post("/login/", async (request, response) => {
     }
   }
 });
+module.exports = app;
