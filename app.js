@@ -27,34 +27,23 @@ const initializeDBAndServer = async () => {
 };
 
 initializeDBAndServer();
-const dbUserChecking = (dbUser) => {
-  return dbUser;
-};
-const passwordChecking = (password) => {
-  const isPasswordMatched = bcrypt.compare(password, dbUser.password);
-  return isPasswordMatched;
-};
 //login user API
 app.post("/login/", async (request, response) => {
   const { username, password } = request.body;
   const payload = { username: username };
   const selectUserQuery = `SELECT * FROM user WHERE username = '${username}';`;
   const dbUser = await db.get(selectUserQuery);
-  switch (true) {
-    case dbUserChecking(dbUser):
-      if (dbUser === undefined) {
-        response.status(400);
-        response.send("Invalid User");
-      }
-      break;
-    case passwordChecking(password):
-      if (isPasswordMatched === false) {
-        response.status(400);
-        response.send("Invalid Password");
-      }
-      break;
-    default:
+  if (dbUser === undefined) {
+    response.status(400);
+    response.send("Invalid User");
+  } else {
+    const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
+    if (isPasswordMatched === false) {
+      response.status(400);
+      response.send("Invalid Password");
+    } else {
       const jwtToken = jwt.sign(payload, "MY_SECRET_TOKEN");
       response.send({ jwtToken });
+    }
   }
 });
